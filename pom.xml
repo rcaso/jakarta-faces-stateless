@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.shava.faces.stateless</groupId>
+    <artifactId>jakarta-faces-stateless</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>jakarta-faces-stateless</name>
+    <packaging>war</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <junit.version>5.9.2</junit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>13.0.0</version>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>app</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <finalName>jakarta-faces-stateless</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.3.2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>4.2.0.Final</version>
+                        <configuration>
+                            <feature-packs>
+                                <feature-pack>
+                                    <!-- Latest released version -->
+                                    <location>org.wildfly:wildfly-galleon-pack:29.0.0.Final</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <!-- Galleon layer allows to trim the installed server to your needs. The 'jaxrs-server'
+                                contains the server content required to execute JAXRS applications -->
+                                <layer>jsf</layer>
+                                <layer>web-clustering</layer>
+                                <layer>core-server</layer>
+                                <layer>core-tools</layer>
+                                <layer>web-server</layer>
+                                <layer>bean-validation</layer>
+                                <layer>cdi</layer>
+                            </layers>
+                            <packaging-scripts>
+                                <execution>
+                                    <scripts>
+                                        <script>
+                                            session.cli
+                                        </script>
+                                    </scripts>
+                                </execution>
+                            </packaging-scripts>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>server</id>
+            <build>
+                <finalName>jakarta-faces-stateless</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.3.2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>4.2.0.Final</version>
+                        <configuration>
+                             <feature-packs>
+                                <feature-pack>
+                                    <!-- Latest released version -->
+                                    <location>org.wildfly:wildfly-galleon-pack:29.0.0.Final</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <!-- Galleon layer allows to trim the installed server to your needs. The 'jaxrs-server'
+                                contains the server content required to execute JAXRS applications -->
+                                <layer>jsf</layer>
+                                <layer>web-clustering</layer>
+                                <layer>core-server</layer>
+                                <layer>core-tools</layer>
+                                <layer>web-server</layer>
+                                <layer>bean-validation</layer>
+                                <layer>cdi</layer>
+                            </layers>
+                            <packaging-scripts>
+                                <execution>
+                                    <scripts>
+                                        <script>
+                                            session.cli
+                                        </script>
+                                    </scripts>
+                                </execution>
+                            </packaging-scripts>
+                            <image>
+                                <!-- (optional) set it to false to skip build the application image (true by default) -->
+                                <build>true</build>
+
+                                <!-- (optional) set it to true to (login and) push the application image to the container registry (false by default).
+
+                                  If user and password are not specified, the image goal will not attempt to login to the container
+                                  registry prior to pushing the image.
+                                  The login to the container registry must then be performed before Maven is run.
+                                  -->
+                                <push>true</push>
+
+                                <!-- (optional) The binary used to perform image commands (build, login, push) (default is "docker") -->
+                                <docker-binary>docker</docker-binary>
+
+                                <!-- (optional) the JDK version used by the application. Allowed values are "11" and "17". If unspecified, the "latest" tag is used to determine the JDK version used by WildFly runtime image -->
+                                <jdk-version>17</jdk-version>
+
+                                <!-- (optional) The group part of the name of the application image -->
+                                <group>rcasov</group>
+
+                                <!-- (optional) The name part of the application image. If not set, the value of the artifactId (in lower case) is used -->
+                                <name>faces-stateless</name>
+
+                                <!-- (optional) The tag part of the application image (default is "latest") -->
+                                <tag>latest</tag>
+
+                                <!-- (optional) The container registry. If set, the registry is added to the application name.
+                                  If the image is pushed and the registry is not set, it defaults to "docker.io" to login to the registry
+                                  -->
+                                <registry>docker.io</registry>
+
+                                <!-- (optional) The user name to login to the container registry (if push is enabled). -->
+                                <user>rcasov</user>
+
+                                <!-- (optional) The password login to the container registry (if push is enabled) -->
+                                <password>sistemas10</password>
+                            </image>
+
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>image</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+</project>

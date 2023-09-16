@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wildfly-custom-deployment
+  labels:
+    app: wildfly-custom
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wildfly-custom
+  template:
+    metadata:
+      name: wildfly-custom
+      labels:
+        app: wildfly-custom
+    spec:
+      containers:
+        - name: wildfly-custom
+          image: rcasov/wildfly-custom
+          imagePullPolicy: IfNotPresent
+#          resources:
+#            limits:
+#              cpu: "0.5"
+#              memory: "1024Mi"
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wildfly-custom-service
+spec:
+  selector:
+    app: wildfly-custom
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 32000
+
+      

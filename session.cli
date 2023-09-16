@@ -1,0 +1,7 @@
+batch
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=infinispan-server:add(host=sr4.ddns.net,port=11222)
+/subsystem=infinispan/remote-cache-container=sessionCache:add(default-remote-cluster=infinispan-cluster,marshaller=PROTOSTREAM,modules=[org.wildfly.clustering.web.hotrod],properties={infinispan.client.hotrod.auth_username=admin,infinispan.client.hotrod.auth_password=infinispan})
+/subsystem=infinispan/remote-cache-container=sessionCache/remote-cluster=infinispan-cluster:add(socket-bindings=[infinispan-server])
+run-batch
+/subsystem=distributable-web/hotrod-session-management=mycache:add(remote-cache-container=sessionCache,granularity=SESSION)
+/subsystem=distributable-web/hotrod-session-management=mycache/affinity=local:add()

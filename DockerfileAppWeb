@@ -1,0 +1,2 @@
+FROM rcasov/wildfly-server
+ADD target/jakarta-faces-stateless.war /opt/server/standalone/deployments/

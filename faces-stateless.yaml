@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: faces-stateless-deployment
+  labels:
+    app: faces-stateless
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: faces-stateless
+  template:
+    metadata:
+      name: faces-stateless
+      labels:
+        app: faces-stateless
+    spec:
+      containers:
+        - name: faces-stateless
+          image: rcasov/faces-stateless
+          imagePullPolicy: IfNotPresent
+#          resources:
+#            limits:
+#              cpu: "0.5"
+#              memory: "1024Mi"
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: faces-stateless-service
+spec:
+  selector:
+    app: faces-stateless
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 32000
+
+      
